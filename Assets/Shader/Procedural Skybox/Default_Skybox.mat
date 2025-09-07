@@ -1,0 +1,230 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Default_Skybox
+  m_Shader: {fileID: 4800000, guid: bb12e0125a97c484b8f709aa5530dc48, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - _ANISOTROPY_ON
+  - _DETAIL_ON
+  - _GEOMETRIC_SPECULAR_AA_ON
+  - _METALLICGLOSSMAP
+  - _PARALLAXMAP
+  - _RIMLIGHT_ON
+  - _TOKSVIG_SPECULAR_AA_ON
+  - _USEPOMSHADOWS_ON
+  - _USESSS_ON
+  - _USE_NOISE_REDUCTION_ON
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _AuroraNoiseTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CloudMap:
+        m_Texture: {fileID: 2800000, guid: 16f8b4eb4c2a0f540b9432d967595579, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CloudMap1:
+        m_Texture: {fileID: 2800000, guid: 16f8b4eb4c2a0f540b9432d967595579, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CloudMap2:
+        m_Texture: {fileID: 2800000, guid: c9ec7f557c0fe9c478c1cb550c091c1c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CloudMap3:
+        m_Texture: {fileID: 2800000, guid: 16f8b4eb4c2a0f540b9432d967595579, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CloudNoiseTex:
+        m_Texture: {fileID: 2800000, guid: 99ac022def299e043aa25a8552d91229, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CloudTex:
+        m_Texture: {fileID: 2800000, guid: 99ac022def299e043aa25a8552d91229, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CloudTex3D:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MoonTex:
+        m_Texture: {fileID: 2800000, guid: 4da7b71737a47514bb4d3fb4eff842a6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NoiseTex:
+        m_Texture: {fileID: 11700000, guid: 51f1237bc9c4c2049ae45e55cb69d4a7, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Starfield:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AtmosphereHeight: 100
+    - _AtmosphereRadius: 6471
+    - _AuroraGlowFalloff: 0.6
+    - _AuroraHeight: 0.4
+    - _AuroraIntensity: 4
+    - _AuroraLatitude: 8
+    - _AuroraRaySharpness: 4
+    - _AuroraScale: 0.1
+    - _AuroraSpeed: 0.05
+    - _AuroraVerticalSpeed: 0.2
+    - _CirrocumulusCoverage: 0.5
+    - _CirrusCoverage: 0.5
+    - _CloudAbsorption: 2
+    - _CloudAltitude: 10
+    - _CloudAnisotropy: 0.1
+    - _CloudAnvil: 1
+    - _CloudBrightness: 100
+    - _CloudCover: 0.9
+    - _CloudCover1: 1
+    - _CloudCover2: 1
+    - _CloudCover3: 0.3
+    - _CloudCoverage: 1
+    - _CloudDarkness: 1.5
+    - _CloudDensity: 1
+    - _CloudDensityMultiplier: 25
+    - _CloudEdgeSoftness: 0.2
+    - _CloudEndHeight: 4.5
+    - _CloudExtinction: 1.5
+    - _CloudFade: 0.2
+    - _CloudHeight: -140.4
+    - _CloudLayerHeight: 10
+    - _CloudLightOffset: 200
+    - _CloudOpacity: 0.25
+    - _CloudOpacity1: 0.25
+    - _CloudOpacity2: 0.24
+    - _CloudOpacity3: 0.6
+    - _CloudRadius: 1000
+    - _CloudRotationSpeed: 0.01
+    - _CloudRotationSpeed1: 0.005
+    - _CloudRotationSpeed2: 0.005
+    - _CloudRotationSpeed3: 0.002
+    - _CloudScale: 269.1
+    - _CloudScattering: 1
+    - _CloudShadowStrength: 0.475
+    - _CloudSharpness: 6.77
+    - _CloudSoftness: 1
+    - _CloudSpeed: -0.01
+    - _CloudSpeed1: -0.001
+    - _CloudSpeed2: 0.001
+    - _CloudSpeed3: 0.02
+    - _CloudStartHeight: 1.5
+    - _CloudSteps: 32
+    - _CloudThickness: 344
+    - _CloudThreshold: 0.5
+    - _CloudTiling: 0.35
+    - _CloudTiling1: 0.25
+    - _CloudTiling2: 0.2
+    - _CloudTiling3: 2
+    - _CloudWindSpeed: 0.005
+    - _CloudWisps: 0.66
+    - _CloudsEnabled: 1
+    - _CumulonimbusAnisotropy: 0.5
+    - _CumulonimbusAnvil: 0.6
+    - _CumulonimbusCoverage: 0.4
+    - _CumulonimbusDarkness: 0.5
+    - _CumulonimbusDensity: 0.7
+    - _CumulonimbusEnable: 1
+    - _CumulonimbusEnabled: 1
+    - _CumulonimbusExtinction: 1
+    - _CumulonimbusHeight: 1.5
+    - _CumulonimbusHeightMax: 6
+    - _CumulonimbusHeightMin: 1.5
+    - _CumulonimbusLightSteps: 8
+    - _CumulonimbusScale: 0.5
+    - _CumulonimbusScattering: 4
+    - _CumulonimbusSteps: 64
+    - _CumulonimbusThickness: 3
+    - _CumulonimbusTiling: 0.8
+    - _Dithering: 1
+    - _DomainWarpIntensity: 2
+    - _DomainWarpScale: 0.5
+    - _Exposure: 1
+    - _FogDensity: 1
+    - _FogEnd: 0.35
+    - _FogFalloff: 0.5
+    - _FogHeight: 100
+    - _FogIntensity: 32
+    - _FogStart: -1
+    - _FogStartDistance: 100
+    - _HorizonFogBrightness: 0.5
+    - _HorizonFogDensity: 0.574
+    - _HorizonFogFalloff: 0.195
+    - _HorizonFogIntensity: 5
+    - _InvertDayNight: 0
+    - _LightAbsorption: 3.5
+    - _MieCoefficient: 0.00001
+    - _MieG: 0.99
+    - _MieScaleHeight: 1.5
+    - _MinGroundAmbient: 0.01
+    - _MoonIntensity: 8
+    - _MoonSize: 0.0374
+    - _NumLightSamples: 8
+    - _NumVolumetricSamples: 64
+    - _OzoneEnabled: 1
+    - _OzoneLayerHeight: 25
+    - _OzoneLayerThickness: 15
+    - _PlanetRadius: 6371
+    - _RayleighScaleHeight: 128
+    - _SampleCount: 2
+    - _SilverLining: 1
+    - _StarIntensity: 1
+    - _StarsDensity: 0.9
+    - _StarsIntensity: 1.5
+    - _StarsScale: 128
+    - _StarsTwinkleSpeed: 0.25
+    - _SunFadeEndAngle: -2
+    - _SunFadeStartAngle: 5
+    - _SunIntensity: 256
+    - _SunSize: 0.000025
+    - _VolumetricAnisotropy: 0.3
+    - _VolumetricScattering: 10
+    - _WarpIntensity: 10
+    - _WarpScale: 2
+    m_Colors:
+    - _AuroraColor: {r: 0.09999997, g: 0.9, b: 0.19999996, a: 1}
+    - _BetaR: {r: 0.0000058, g: 0.0000135, b: 0.0000331, a: 0}
+    - _CloudColor: {r: 1, g: 1, b: 1, a: 1}
+    - _CloudColor1: {r: 1, g: 1, b: 1, a: 1}
+    - _CloudColor2: {r: 0.9, g: 0.9, b: 0.9, a: 1}
+    - _CloudColor3: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+    - _CloudColorDay: {r: 1, g: 1, b: 1, a: 1}
+    - _CloudColorNight: {r: 0.09999997, g: 0.14999998, b: 0.19999996, a: 1}
+    - _CloudDarkness: {r: 0.09999997, g: 0.14999998, b: 0.19999996, a: 1}
+    - _CloudDirection: {r: 1, g: 0, b: 0, a: 0}
+    - _CloudTintColor: {r: 1, g: 1, b: 1, a: 1}
+    - _CumulonimbusColor: {r: 1, g: 1, b: 1, a: 1}
+    - _CumulonimbusWindSpeed: {r: 0.01, g: 0, b: 0.01, a: 0}
+    - _FogColor: {r: 0.19357423, g: 0.23023188, b: 0.2830189, a: 1}
+    - _GroundColor: {r: 0.13007298, g: 0.20701315, b: 0.3490566, a: 1}
+    - _HorizonColor: {r: 1, g: 0.8, b: 0.6, a: 1}
+    - _HorizonFogColor: {r: 0.501513, g: 0.7951666, b: 0.9245283, a: 1}
+    - _MoonDirection: {r: 0.7, g: 0.7, b: 0, a: 0}
+    - _NightAmbientColor: {r: 0.049999982, g: 0.079999976, b: 0.14999998, a: 1}
+    - _NightSkyColor: {r: 0.01, g: 0.02, b: 0.04, a: 1}
+    - _OzoneAbsorption: {r: 0.0000006, g: 0.000002, b: 0.0000002, a: 0}
+    - _SkyTint: {r: 1, g: 1, b: 1, a: 1}
+    - _SunsetTint: {r: 0.4528302, g: 0.15995494, b: 0, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

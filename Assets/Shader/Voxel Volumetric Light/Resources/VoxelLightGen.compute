@@ -1,0 +1,140 @@
+// VoxelLightGen.compute
+#pragma kernel ClearGrid
+#pragma kernel BuildOccupancy
+#pragma kernel LightVoxelize
+
+// Voxel volume (single channel float)
+RWTexture3D<float> _Voxel;
+RWTexture3D<float> _Occ;
+
+// Resolution/grid
+int3 _Res;
+float3 _GridCenter;
+float _GridSize;
+
+// Light params
+float3 _LightPos;
+float3 _LightDir;
+float _LightRange;
+float _SpotCos;
+float _FalloffExp;
+float _Extinction;
+
+// Boxes buffer layout: float3 center0, float3 half0, center1, half1 ...
+StructuredBuffer<float3> _Boxes;
+int _BoxCount;
+
+float3 IndexToWorld(int3 id)
+{
+    float3 minP = _GridCenter - _GridSize * 0.5;
+    float vox = _GridSize / (float)_Res.x;
+    return minP + (float3(id) + 0.5) * vox;
+}
+
+float3 WorldToIndexF(float3 p)
+{
+    float3 minP = _GridCenter - _GridSize * 0.5;
+    float vox = _GridSize / (float)_Res.x;
+    return (p - minP) / vox - 0.5;
+}
+
+bool PointInAABB(float3 p, float3 c, float3 h)
+{
+    float3 d = abs(p - c);
+    return all(d <= h);
+}
+
+[numthreads(8,8,8)]
+void ClearGrid(uint3 id : SV_DispatchThreadID)
+{
+    if (any(id >= _Res)) return;
+    _Voxel[id] = 0.0;
+    _Occ[id] = 0.0;
+}
+
+[numthreads(8,8,8)]
+void BuildOccupancy(uint3 id : SV_DispatchThreadID)
+{
+    if (any(id >= _Res)) return;
+    float3 wp = IndexToWorld(int3(id.x, id.y, id.z));
+    float occ = 0.0;
+    for (int i = 0; i < _BoxCount; i++)
+    {
+        float3 c = _Boxes[i*2 + 0];
+        float3 h = _Boxes[i*2 + 1];
+        if (PointInAABB(wp, c, h)) { occ = 1.0; break; }
+    }
+    _Occ[id] = occ;
+}
+
+// 3D DDA cast on occupancy grid
+bool DDA_Occluded(float3 p0, float3 p1)
+{
+    float3 i0f = clamp(WorldToIndexF(p0), 0.0, (float3)_Res - 1);
+    float3 i1f = clamp(WorldToIndexF(p1), 0.0, (float3)_Res - 1);
+
+    int3 i0 = (int3)floor(i0f);
+    int3 i1 = (int3)floor(i1f);
+
+    if (all(i0 == i1)) return false;
+
+    float3 dir = normalize(i1f - i0f + 1e-6);
+    int3 step = int3(sign(dir));
+    float3 tDelta = abs(1.0 / dir);
+    
+    float3 boundary;
+    boundary.x = (step.x > 0) ? (floor(i0f.x) + 1.0 - i0f.x) : (i0f.x - floor(i0f.x));
+    boundary.y = (step.y > 0) ? (floor(i0f.y) + 1.0 - i0f.y) : (i0f.y - floor(i0f.y));
+    boundary.z = (step.z > 0) ? (floor(i0f.z) + 1.0 - i0f.z) : (i0f.z - floor(i0f.z));
+    
+    float3 tMax = tDelta * max(boundary, 1e-6);
+
+    int safety = 0;
+    while (safety < 4096)
+    {
+        if (tMax.x < tMax.y)
+        {
+            if (tMax.x < tMax.z) { i0.x += step.x; tMax.x += tDelta.x; }
+            else                 { i0.z += step.z; tMax.z += tDelta.z; }
+        }
+        else
+        {
+            if (tMax.y < tMax.z) { i0.y += step.y; tMax.y += tDelta.y; }
+            else                 { i0.z += step.z; tMax.z += tDelta.z; }
+        }
+
+        if (any(i0 < 0) || any(i0 >= _Res)) return false;
+        if (_Occ[i0] > 0.5) return true;
+        if (all(i0 == i1)) return false;
+
+        safety++;
+    }
+
+    return false;
+}
+
+
+[numthreads(8,8,8)]
+void LightVoxelize(uint3 id : SV_DispatchThreadID)
+{
+    if (any(id >= _Res)) return;
+    int3 ii = int3(id.x, id.y, id.z);
+    float3 wp = IndexToWorld(ii);
+
+    float3 L = wp - _LightPos;
+    float d = length(L);
+    if (d > _LightRange) { _Voxel[ii] = 0.0; return; }
+
+    float atten = pow(saturate(1.0 - d / _LightRange), _FalloffExp);
+    float3 Ldir = L / max(d, 1e-6);
+    if (_SpotCos > -0.999)
+    {
+        if (dot(Ldir, normalize(_LightDir)) < _SpotCos) { _Voxel[ii] = 0.0; return; }
+    }
+
+    if (DDA_Occluded(_LightPos, wp)) { _Voxel[ii] = 0.0; return; }
+
+    atten *= exp(-_Extinction * d);
+
+    _Voxel[ii] = atten;
+}

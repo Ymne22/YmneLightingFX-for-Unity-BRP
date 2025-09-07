@@ -1,0 +1,209 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: WoodFloor052_1K-MAT
+  m_Shader: {fileID: 4800000, guid: e9249aee88dd0134484d2a4532884117, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - _USEPOM_ON
+  m_InvalidKeywords:
+  - _GEOMETRIC_SPECULAR_AA_ON
+  - _PARALLAXMAP
+  - _SPECULARAA_ON
+  - _SPECULAR_AA_ON
+  - _USE_NOISE_REDUCTION_ON
+  - _USE_SPECULAR_AA_ON
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 1
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CameraOpaqueTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ClearCoatMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _IridescenceMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: b3e5f6225c1f279498e8ca5a0f288bba, type: 3}
+        m_Scale: {x: 3, y: 3}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NoiseTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 2800000, guid: 57df9ab56ff695941a84fca398181535, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 2800000, guid: 09510a055099d2b429c46bad8bf8f461, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OpacityMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 2800000, guid: 674c0a127e840354ea6dbda29afe9dc1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RoughnessMap:
+        m_Texture: {fileID: 2800000, guid: 5afabe447b8273740b796b3227a117f4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SubsurfaceDataMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SubsurfaceMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SubsurfaceThickness:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Anisotropy: 0
+    - _BumpScale: 1
+    - _ClearCoat: 0
+    - _ClearCoatRoughness: 0
+    - _Culling: 2
+    - _Cutoff: 0.5
+    - _DetailAlbedoIntensity: 0
+    - _DetailMapTiling: 1
+    - _DetailNormalMapScale: 1
+    - _DetailNormalScale: 1
+    - _DstBlend: 0
+    - _EMISSION: 0
+    - _EmissionIntensity: 0
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
+    - _InvertPOMShadows: 0
+    - _InvertParallax: 0
+    - _IridescenceIOR: 1.5
+    - _IridescenceIntensity: 1
+    - _IridescenceThickness: 400
+    - _Metallic: 0
+    - _Mode: 0
+    - _NoiseTiling: 1
+    - _NormalSmoothingIntensity: 2
+    - _OcclusionDirect: 0
+    - _OcclusionStrength: 2
+    - _POMRefinementSteps: 2
+    - _POMSamples: 4
+    - _POMShadowDistance: 0
+    - _POMShadowIntensity: 0
+    - _POMShadowSamples: 0
+    - _POMShadowSoftness: 0
+    - _POMShadowThreshold: 0.01
+    - _Parallax: 0.015
+    - _ReflectionBlurScale: 1
+    - _ReflectionStrength: 0.5
+    - _Refraction: 0.5
+    - _RefractionRoughnessBlur: 8
+    - _RefractiveIndex: 1.33
+    - _RimIntensity: 0
+    - _RimPower: 2
+    - _Roughness: 1
+    - _SSRBinarySearchSteps: 6
+    - _SSRBlurIntensity: 1
+    - _SSREdgeFalloff: 1
+    - _SSRIntensity: 1
+    - _SSRMaxDistance: 100
+    - _SSRMaxSteps: 128
+    - _SSRMipmapFactor: 8
+    - _SSRResolution: 0.25
+    - _SSRRoughnessThreshold: 1
+    - _SSRStepSize: 0.1
+    - _SSSDistortion: 0.5
+    - _SSSPower: 5
+    - _ScatterDistance: 1
+    - _Smoothness: 0.5
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SpecularIntensity: 0.7
+    - _SrcBlend: 1
+    - _SubsurfaceFalloff: 2
+    - _SubsurfaceIntensity: 0
+    - _SubsurfaceRadius: 1
+    - _ThicknessScale: 1
+    - _ToksvigStrength: 0.02
+    - _TriplanarSharpness: 5
+    - _UVMappingType: 0
+    - _UVSec: 0
+    - _UseAnisotropy: 0
+    - _UseClearCoat: 0
+    - _UseCutout: 0
+    - _UseDetail: 0
+    - _UseEmission: 0
+    - _UseIridescence: 0
+    - _UseNormalSmoothing: 0
+    - _UsePOM: 1
+    - _UsePOMShadows: 0
+    - _UseRefraction: 0
+    - _UseRim: 0
+    - _UseRimLight: 0
+    - _UseSSR: 0
+    - _UseSSS: 0
+    - _UseSpecularAA: 1
+    - _ZWrite: 1
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _DielectricF0: {r: 0.04, g: 0.04, b: 0.04, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _MetallicF0: {r: 1, g: 1, b: 1, a: 1}
+    - _MetallicSpecColor: {r: 1, g: 1, b: 1, a: 1}
+    - _RimColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SubsurfaceColor: {r: 1, g: 0.7725, b: 0.27049997, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

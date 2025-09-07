@@ -3,7 +3,7 @@
 ## ⚠️ Important
 These rendering systems are optimized and tested with **Vulkan**.  
 Some features (especially voxel lighting and temporal reprojection) may behave incorrectly or fail under **DirectX 11/12**.  
-👉 Please **switch your Graphics API to Vulkan** in **Project Settings → Player → Other Settings**.
+Please **switch your Graphics API to Vulkan** in **Project Settings → Player → Other Settings**.
 
 ---
 
@@ -15,13 +15,22 @@ Includes:
 - **Volumetric Atmosphere** – clouds, fog, and god rays  
 - **Voxel Volumetric Light** – per-light volumetric scattering with voxelization  
 - **Shadow CSM Settings Shader** – soft shadows with rotated Poisson disk sampling  
-- **PBR GGX Deferred Shader** – deferred-capable materials with POM, emission, rim, and SSS  
-
-Designed primarily for **forward rendering**, but with extended **deferred support** through BRP Shader Settings.
+- **PBR GGX Forward/Deferred Shader** – forward for full version, and deferred-capable materials with POM, emission, rim, and SSS  
 
 ---
 
 ## Lighting Stack
+
+<p align="center">SSGI and SSAO Preview</p>
+<p align="center">
+  <img src="Screenshots/screenshot_0.gif" width="800"/>
+</p>
+
+
+<p align="center">SSR Preview</p>
+<p align="center">
+  <img src="Screenshots/screenshot_1.gif" width="800"/>
+</p>
 
 ### 1. Screen-Space Global Illumination (SSGI)
 
@@ -84,6 +93,11 @@ graph TD
 
 ## Volumetric Atmosphere
 
+<p align="center">Volumetric Clouds Preview</p>
+<p align="center">
+  <img src="Screenshots/screenshot_3.gif" width="800"/>
+</p>
+
 ### 1. Volumetric Clouds
 
 - Raymarched cloud layers with coverage, density, and detail noise  
@@ -130,6 +144,11 @@ graph TD
 ---
 
 ## Voxel Volumetric Light
+
+<p align="center">Voxel-Volumetric Light</p>
+<p align="center">
+  <img src="Screenshots/screenshot_4.gif" width="800"/>
+</p>
 
 ### 1. Overview
 
@@ -192,6 +211,10 @@ graph TD
 
 ## PBR GGX Deferred Shader
 
+<p align="center">Ymne PBR on Deferred Pass</p>
+<p align="center">
+  <img src="Screenshots/screenshot_2.gif" width="800"/>
+</p>
 ### Overview
 
 - Deferred-capable version of the forward PBR shaders  
@@ -212,7 +235,7 @@ graph TD
 
 ### Limitations vs Forward
 1. No **Specular Anti-Aliasing**  
-2. Rim & Subsurface Scattering are **approximate** (prediction only)  
+2. Rim & Subsurface Scattering are **approximate**
 3. No **anisotropy specular**  
 4. Limited pass budget → some advanced effects excluded  
 
@@ -232,7 +255,7 @@ graph TD
 ## Sample Scenes
 
 - **SampleScenes_LightingStack** – demonstrates GI, AO, SSR, SSDCS, and shadows  
-- **SampleScenes_VoxelLight** – voxel lighting (baked + realtime) combined with atmosphere  
+- **SampleScenes_VoxelLight** – voxel lighting
 
 ---
 

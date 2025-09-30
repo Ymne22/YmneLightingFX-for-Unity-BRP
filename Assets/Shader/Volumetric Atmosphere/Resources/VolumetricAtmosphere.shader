@@ -3,6 +3,8 @@ Shader "Hidden/VolumetricAtmosphere"
     Properties
     {
         _MainTex("Texture", 2D) = "white" {}
+        _HG_G("Henyey-Greenstein G", Range(-0.9, 0.9)) = -0.9
+        _ScatteringIntensity("Scattering Intensity", Range(0, 50)) = 8.0
     }
     SubShader
     {
@@ -41,10 +43,13 @@ Shader "Hidden/VolumetricAtmosphere"
         int _Steps, _LightSteps;
         half _TemporalBlendFactor;
         half _UseTemporalDithering;
-
+        
+        // Scattering Uniforms
+        float _HG_G;
+        float _ScatteringIntensity;
+        
         // Blur uniforms
         half _BlurRadius, _BlurDepthWeight, _BlurNormalWeight;
-
         // Fog uniforms
         float4 _FogColor, _LightColor;
         float _FogIntensity, _FogDensity, _FogStart, _FogHeightStart, _FogHeightEnd;
@@ -93,12 +98,18 @@ Shader "Hidden/VolumetricAtmosphere"
             return o;
         }
 
-        // -- - Helper Functions -- -
+        // --- Helper Functions ---
         half readDepth(float2 coord) { return LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, coord)); }
         float hash(float3 p) { p = frac(p * 0.3183099 + 0.1); p *= 17.0; return frac(p.x * p.y * p.z * (p.x + p.y + p.z)); }
         float noise(float3 x) { float3 i = floor(x); float3 f = frac(x); f = f * f * (3.0 - 2.0 * f); return lerp(lerp(lerp(hash(i + float3(0, 0, 0)), hash(i + float3(1, 0, 0)), f.x), lerp(hash(i + float3(0, 1, 0)), hash(i + float3(1, 1, 0)), f.x), f.y), lerp(lerp(hash(i + float3(0, 0, 1)), hash(i + float3(1, 0, 1)), f.x), lerp(hash(i + float3(0, 1, 1)), hash(i + float3(1, 1, 1)), f.x), f.y), f.z); }
         float fbm(float3 p, int octaves) { float v = 0.0; float a = 0.5; for (int i = 0; i < octaves; i ++) { v += a * noise(p); p *= 2.0; a *= 0.5; } return v; }
         float3 curlNoise(float3 p) { const float e = 0.1; float3 dx = float3(e, 0, 0); float3 dy = float3(0, e, 0); float3 dz = float3(0, 0, e); float fbm_p = fbm(p, 1); float fbm_px = fbm(p + dx, 1); float fbm_py = fbm(p + dy, 1); float fbm_pz = fbm(p + dz, 1); float x = fbm_py - fbm_pz; float y = fbm_pz - fbm_px; float z = fbm_px - fbm_py; return normalize(float3(x, y, z)) / e; }
+        
+        // --- Scattering Function ---
+        float henyey_greenstein(float cos_theta, float g) {
+            float g2 = g * g;
+            return (1.0 - g2) / (4.0 * PI * pow(1.0 + g2 - 2.0 * g * cos_theta, 1.5));
+        }
 
         float cloud_density(float3 pos) {
             float3 samplePos = ((pos + _NoiseSeedOffset) + _WindDirection * _WindSpeed * _Time.y) * _NoiseScale * 0.001;
@@ -233,9 +244,15 @@ Shader "Hidden/VolumetricAtmosphere"
                             float lightDensity = 0;
                             float lightStepSize = 96.0;
                             for(int ls = 0; ls < _LightSteps; ls ++) lightDensity += cloud_density(pos + _LightDir * lightStepSize * (ls + 0.5)) * lightStepSize;
+                            
                             float lightEnergy = beerLaw(lightDensity * _SelfShadowStrength);
-                            float phase = saturate(dot(rayDir, - _LightDir));
-                            float silverLining = pow(saturate(dot(normalize(rayDir - _LightDir), - _LightDir)), _SilverLiningSpread) * _SilverLiningIntensity;
+                            float cos_theta = dot(rayDir, -_LightDir);
+                            
+                            //Henyey-Greenstein phase function for scattering
+                            float phase = henyey_greenstein(cos_theta, _HG_G) * _ScatteringIntensity;
+                            
+                            float silverLining = pow(1.0 - saturate(cos_theta), _SilverLiningSpread) * _SilverLiningIntensity;
+                            
                             float3 lightColor = lerp(_SkyColor.rgb, _SunColor.rgb, lightEnergy) + UNITY_LIGHTMODEL_AMBIENT.rgb;
                             cloudColor = _CloudColor.rgb * lightColor * (phase + silverLining);
                         } else {
@@ -271,8 +288,7 @@ Shader "Hidden/VolumetricAtmosphere"
                 float4 cloudRender = tex2D(_CloudTex, i.uv);
 
                 float alpha = saturate(1.0 - (cloudRender.g - cloudRender.r));
-                float luminance = cloudRender.r / (alpha + 1e-6f);
-                float3 pureCloudColor = float3(luminance, luminance, luminance);
+                float3 pureCloudColor = cloudRender.rrr / (alpha + 1e-6f);
 
                 float3 finalColor = lerp(sceneColor.rgb, pureCloudColor, alpha);
                 return float4(finalColor, sceneColor.a);
@@ -286,19 +302,20 @@ Shader "Hidden/VolumetricAtmosphere"
             #pragma vertex vert_fullres
             #pragma fragment frag_gaussian_blur
 
+       
             half4 frag_gaussian_blur(v2f_fullres i) : SV_Target {
                 half centerDepth = readDepth(i.uv);
                 half rawDepth; half3 centerNormal; DecodeDepthNormal(tex2D(_CameraDepthNormalsTexture, i.uv), rawDepth, centerNormal);
                 half4 total = 0.0h; half totalWeight = 0.0h;
-
                 [unroll]
-                for (int x = - 1; x <= 2; x ++) {
+                for (int x = - 2; x <= 2; x ++) {
                     [unroll]
-                    for (int y = - 2; y <= 1; y ++) {
+                    for (int y = - 2; y <= 2; y ++) {
                         half2 offset = half2(x, y) * _FullResTexelSize.xy * _BlurRadius;
                         half2 sampleUV = i.uv + offset;
                         half sampleDepth = readDepth(sampleUV); half3 sampleNormal; DecodeDepthNormal(tex2D(_CameraDepthNormalsTexture, sampleUV), rawDepth, sampleNormal);
-                        half depthDiff = abs(centerDepth - sampleDepth); half depthW = exp(- _BlurDepthWeight * depthDiff * depthDiff);
+                        half depthDiff = abs(centerDepth - sampleDepth);
+                        half depthW = exp(- _BlurDepthWeight * depthDiff * depthDiff);
                         half normalDot = saturate(dot(centerNormal, sampleNormal));
                         half normalW = pow(normalDot, _BlurNormalWeight);
                         half dist = dot(offset, offset); half gaussW = exp(- dist);
@@ -317,6 +334,7 @@ Shader "Hidden/VolumetricAtmosphere"
             #pragma vertex vert_fullres
             #pragma fragment frag_temporal
 
+            
             float4 frag_temporal(v2f_fullres i) : SV_Target {
                 float4 current = tex2D(_CurrentFrameTex, i.uv);
                 float depth = readDepth(i.uv);
@@ -349,6 +367,7 @@ Shader "Hidden/VolumetricAtmosphere"
             CGPROGRAM
             #pragma vertex vert_scene_fog
             #pragma fragment frag_scene_fog
+        
             #pragma multi_compile __ ENABLE_FOG
             #pragma multi_compile __ DIRECTIONAL_LIGHT_ON
             #pragma multi_compile __ FOG_INCLUDE_SKYBOX
@@ -394,12 +413,13 @@ Shader "Hidden/VolumetricAtmosphere"
             #pragma vertex vert_fullres
             #pragma fragment frag
 
-            half4 frag(v2f_fullres i) : SV_Target
+         
+           half4 frag(v2f_fullres i) : SV_Target
             {
                 float sceneDepth = readDepth(i.uv);
                 if (sceneDepth < _ProjectionParams.z * 0.999)
                 {
-                    return 0; //
+                    return 0;
                 }
 
                 float dist = distance(i.uv, _LightScreenPos.xy);
@@ -421,7 +441,8 @@ Shader "Hidden/VolumetricAtmosphere"
             CGPROGRAM
             #pragma vertex vert_fullres
             #pragma fragment frag
-            #pragma target 3.0
+         
+           #pragma target 3.0
 
             half4 frag(v2f_fullres i) : SV_Target
             {
@@ -443,31 +464,24 @@ Shader "Hidden/VolumetricAtmosphere"
             ENDCG
         }
 
-        // PASS 8 : God Ray Composite (Improved)
+        // PASS 8 : God Ray Composite
         Pass
         {
             CGPROGRAM
             #pragma vertex vert_fullres
             #pragma fragment frag
-          
+         
             #pragma multi_compile __ ENABLE_GODRAYS
-            // No longer need the shader_feature for blend modes
 
             half4 frag(v2f_fullres i) : SV_Target
             {
                 half4 sceneColor = tex2D(_MainTex, i.uv);
                 #if defined(ENABLE_GODRAYS)
                     half4 godRayColor = tex2D(_GodRayTex, i.uv);
-
-                    // Keep the depth-based occlusion
                     float sceneDepth = readDepth(i.uv);
                     float skyMask = smoothstep(_ProjectionParams.z * 0.98, _ProjectionParams.z, sceneDepth);
                     godRayColor.rgb *= skyMask;
-                    
-                    // Apply intensity
                     godRayColor.rgb *= _GodRayIntensity;
-
-                    // Permanently use Additive blending
                     sceneColor.rgb += godRayColor.rgb;
                 #endif
 
@@ -477,4 +491,3 @@ Shader "Hidden/VolumetricAtmosphere"
         }
     }
 }
-

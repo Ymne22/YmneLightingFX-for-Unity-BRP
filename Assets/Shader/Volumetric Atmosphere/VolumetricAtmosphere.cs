@@ -10,7 +10,6 @@ using System.Collections.Generic;
 [AddComponentMenu("Image Effects/Rendering/Volumetric Atmosphere (Clouds and Fog)")]
 public class VolumetricAtmosphere : MonoBehaviour
 {
-    // Private class to hold data per camera
     private class CameraData
     {
         public CommandBuffer commandBuffer;
@@ -76,6 +75,9 @@ public class VolumetricAtmosphere : MonoBehaviour
     public Color skyColor = Color.black;
     [Range(0f, 2f)] public float silverLiningIntensity = 2.0f;
     [Range(0f, 1f)] public float silverLiningSpread = 0.5f;
+    [Range(-0.9f, 0.9f)] public float henyeyGreensteinG = -0.9f;
+    [Range(0f, 50f)] public float scatteringIntensity = 15.0f;
+
 
     [Header("Cloud Distance & Curvature")]
     public bool useDistanceFade = true;
@@ -234,6 +236,9 @@ public class VolumetricAtmosphere : MonoBehaviour
         material.SetFloat("_UseTemporalDithering", useTemporalReprojection ? 1.0f : 0.0f);
         material.SetVector("_FullResTexelSize", new Vector4(1.0f / fullResW, 1.0f / fullResH, fullResW, fullResH));
         material.SetFloat("_SelfShadowStrength", selfShadowStrength);
+        material.SetFloat("_HG_G", henyeyGreensteinG);
+        material.SetFloat("_ScatteringIntensity", scatteringIntensity);
+        
         if (useCurvature) material.EnableKeyword("USE_CURVATURE"); else material.DisableKeyword("USE_CURVATURE");
         material.SetFloat("_PlanetRadius", planetRadius);
         if (useDistanceFade)
@@ -415,13 +420,11 @@ public class VolumetricAtmosphere : MonoBehaviour
             }
             else
             {
-                // Sun is behind camera, so just draw the scene with fog
                 cmd.Blit(sceneWithFogID, BuiltinRenderTextureType.CameraTarget);
             }
         }
         else
         {
-            // God Rays are disabled, so just draw the scene with fog
             cmd.Blit(sceneWithFogID, BuiltinRenderTextureType.CameraTarget);
         }
 

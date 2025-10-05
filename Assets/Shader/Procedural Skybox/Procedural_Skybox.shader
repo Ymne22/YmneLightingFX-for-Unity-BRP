@@ -35,6 +35,8 @@ Shader "Skybox/Physically-Based Procedural"
         _StarsDensity("Stars Density", Range(0.9, 0.999)) = 0.9
         _StarsScale("Stars Scale", Range(50, 500)) = 128.0
         _StarsTwinkleSpeed("Stars Twinkle Speed", Range(0, 10)) = 0.25
+        _StarsRotation("Stars Rotation Speed", Range(0, 1)) = 0.05
+        _AxialTilt("Axial Tilt", Range(0.0, 90.0)) = 23.5 // Earth's axial tilt
 
         [Header(Clouds Settings)]
         [NoScaleOffset] _CloudMap("Cloud Map (Grayscale)", 2D) = "white" {}
@@ -96,7 +98,7 @@ Shader "Skybox/Physically-Based Procedural"
             half4 _FogColor;
             float _FogStart, _FogEnd, _FogIntensity;
 
-            float _StarsIntensity, _StarsDensity, _StarsScale, _StarsTwinkleSpeed;
+            float _StarsIntensity, _StarsDensity, _StarsScale, _StarsTwinkleSpeed, _StarsRotation, _AxialTilt;
             
             sampler2D _CloudMap;
             half4 _CloudColor;
@@ -106,8 +108,22 @@ Shader "Skybox/Physically-Based Procedural"
             {
                 float4 pos : SV_POSITION;
                 float3 worldPos : TEXCOORD0;
+                float3 starsDir : TEXCOORD1; // New variable to pass rotated direction for stars
                 UNITY_VERTEX_OUTPUT_STEREO
             };
+
+            // Function to create a rotation matrix around an axis
+            float3x3 rotationMatrix(float3 axis, float angle)
+            {
+                axis = normalize(axis);
+                float s = sin(angle);
+                float c = cos(angle);
+                float oc = 1.0 - c;
+                
+                return float3x3(oc * axis.x * axis.x + c,           oc * axis.x * axis.y - axis.z * s,  oc * axis.z * axis.x + axis.y * s,
+                                oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,
+                                oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c          );
+            }
 
             v2f vert(appdata_base v)
             {
@@ -116,6 +132,32 @@ Shader "Skybox/Physically-Based Procedural"
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
                 o.pos = UnityObjectToClipPos(v.vertex);
                 o.worldPos = v.vertex.xyz;
+
+                // The sun/moon/stars rotation is now derived from the directional light's orientation
+                // to ensure perfect alignment, while respecting the axial tilt for the stars.
+
+                // 1. Get sun direction from the scene's main directional light.
+                float3 sunDir = normalize(_WorldSpaceLightPos0.xyz);
+
+                // 2. Calculate the sun's rotation angle around the world's vertical (Y) axis.
+                // This angle drives the rotation of the starfield.
+                float sunRotationAngle = atan2(sunDir.x, sunDir.z);
+
+                // 3. Get the tilt angle in radians from the material property.
+                float tiltAngle = radians(_AxialTilt);
+
+                // 4. Define the tilted rotation axis. This simulates the planet's axial tilt.
+                float s = sin(tiltAngle);
+                float c = cos(tiltAngle);
+                float3 rotationAxis = float3(0, c, s);
+
+                // 5. Create the rotation matrix for the celestial sphere around our tilted axis.
+                float rotationAngle = (_Time.y * _StarsRotation) - sunRotationAngle;
+                float3x3 celestialRotation = rotationMatrix(rotationAxis, rotationAngle);
+                
+                // 6. Apply the rotation to the skybox vertices to get the star direction.
+                o.starsDir = mul(celestialRotation, v.vertex.xyz);
+
                 return o;
             }
 
@@ -195,9 +237,13 @@ Shader "Skybox/Physically-Based Procedural"
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
 
                 // --- Setup ---
+                // The sun's direction is now taken directly from the scene's directional light
+                // to ensure it aligns perfectly with scene lighting.
                 float3 sunDir = normalize(_WorldSpaceLightPos0.xyz);
+                
                 float3 moonDir = -sunDir;
                 float3 viewDir = normalize(i.worldPos);
+                float3 starsDir = normalize(i.starsDir); // Use the rotated direction for stars
                 float3 cameraPos = float3(0, _PlanetRadius + 0.001, 0);
                 float sunAngle = sunDir.y;
                 
@@ -247,16 +293,16 @@ Shader "Skybox/Physically-Based Procedural"
 
                 half3 skyColor = lerp(nightScattering + _NightAmbientColor.rgb, dayScattering, sunlightFactor);
 
-                // --- STABLE STARS CALCULATION ---
+                // --- STARS CALCULATION using rotated direction ---
                 half3 starsColor = 0;
                 if (sunlightFactor < 0.8)
                 {
-                    float3 cell_id = floor(viewDir * _StarsScale);
+                    float3 cell_id = floor(starsDir * _StarsScale); // Use starsDir
                     float3 cell_hash = hash3(cell_id);
                     if (cell_hash.x > _StarsDensity)
                     {
                         float2 star_pos_offset = cell_hash.yz - 0.5;
-                        float3 p = (viewDir * _StarsScale) - (cell_id + float3(star_pos_offset.x, star_pos_offset.y, 0.0) + 0.5);
+                        float3 p = (starsDir * _StarsScale) - (cell_id + float3(star_pos_offset.x, star_pos_offset.y, 0.0) + 0.5); // Use starsDir
                         float dist_sq = dot(p, p);
                         float star_falloff = exp(-40.0 * dist_sq);
                         if (star_falloff > 0.01)
@@ -311,12 +357,12 @@ Shader "Skybox/Physically-Based Procedural"
                 half3 cloudFinalColor = 0;
                 
                 // --- Dome Rotation ---
-                float rotationAngle = _Time.y * _CloudRotationSpeed;
-                float s = sin(rotationAngle);
-                float c = cos(rotationAngle);
-                float2x2 rotationMatrix = float2x2(c, -s, s, c);
+                float cloudRotationAngle = _Time.y * _CloudRotationSpeed;
+                float cs = sin(cloudRotationAngle);
+                float cc = cos(cloudRotationAngle);
+                float2x2 cloudRotationMatrix = float2x2(cc, -cs, cs, cc);
                 float3 rotatedViewDir = viewDir;
-                rotatedViewDir.xz = mul(rotationMatrix, viewDir.xz);
+                rotatedViewDir.xz = mul(cloudRotationMatrix, viewDir.xz);
 
                 // --- Triplanar Mapping for Clouds ---
                 // The view direction acts as the position and normal on the sky sphere
@@ -385,3 +431,4 @@ Shader "Skybox/Physically-Based Procedural"
     }
     FallBack "Skybox/Cubemap"
 }
+

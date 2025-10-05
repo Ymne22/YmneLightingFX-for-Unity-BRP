@@ -102,7 +102,7 @@ graph TD
 
 - Raymarched cloud layers with coverage, density, and detail noise  
 - Animated via **wind speed**, **direction**, and **morphing**  
-- Lighting options: absorption, self-shadowing, silver lining  
+- Lighting options: absorption, self-shadowing, silver lining, added Henyey-Greenstein G scattering
 
 ---
 
